@@ -1,7 +1,7 @@
 import math
 import re
 
-print('day6')
+print('day7')
 
 
 def getBagNameKey(s):
@@ -19,10 +19,10 @@ def getBagNameValue(ss):
     if ss.startswith("no other bags."):
         return None
     sa = ss.split(',')
-    values = {}
+    values = []
     for sae in sa:
         k, v = getNameCount(sae)
-        values[k] = v;
+        values.append({'k': k, 'v': v});
     print('values', values)
     return values
 
@@ -30,14 +30,15 @@ def getBagNameValue(ss):
 def find(s):
     l = s.split("\n")
     print('len(l): ', len(l))
-    d = []
+    d = {}
 
     def creatBagDicElement(egs):
         temp = egs.split('contain');
         # print('lG:', temp)
         key = getBagNameKey(temp[0])
         values = getBagNameValue(temp[1])
-        d.append({key: values})
+        # d.append({key: values})
+        d[key] = values;
 
     tc = 0;
     for el in l:
@@ -120,22 +121,23 @@ def find(s):
         return c;
 
     def createObj(sb, t):
-        q, w = sb.items()[0]
-        return {'key': q, 'count': w, 'times': t}
+        # q, w = sb['k']
+        return {'k': sb['k'], 'v': sb['v'], 't': t}
 
     def totalBag(sb, dd):
-        stack = [createObj({sb: 1}, 1)]
+        stack = [createObj({'k': sb, 'v': 1}, 1)]
         tc = 0
         while len(stack) > 0:
             bagObj = stack.pop()
-            tc += bagObj['count'] * bagObj['times']
-            ddd = dd[bagObj['key']]
+            tc += bagObj['v'] * bagObj['t']
+            ddd = dd[bagObj['k']]
             if ddd is None:
                 continue
-            for k in ddd:
-                stack.append(createObj(ddd[k], bagObj['times']));
+            for elBag in ddd:
+                stack.append(createObj(elBag, bagObj['v']* bagObj['t']));
+        return tc
 
-    # return totalBag("shiny-gold", d);
+    return totalBag("shiny-gold", d) - 1;
 
 
 a = """light red bags contain 1 bright white bag, 2 muted yellow bags.
@@ -741,4 +743,11 @@ dark plum bags contain 1 dark blue bag, 2 light yellow bags, 2 striped silver ba
 faded violet bags contain 4 dotted gray bags, 5 muted blue bags.
 plaid black bags contain 2 posh aqua bags, 5 plaid orange bags.
 light green bags contain 4 muted silver bags, 2 muted tomato bags, 3 mirrored teal bags."""
-print('Count :', find(a))
+c ="""shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags."""
+print('Count :', find(b))
